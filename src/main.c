@@ -20,20 +20,14 @@ int menu();
 void singlePlayer();
 void initTetrominos();
 Tetromino selectTetromino();
-void printTetromino();
+void printTetromino(Tetromino t, WINDOW* window, int x, int y);
 void playerVsPlayer();
 void playerVsCpu();
 
 // static variables
 static int win_width, win_height; // the window dimensions
-static int mat[MAT_H][MAT_W] = {{0}}; // the game field matrix
+static int mat[MAT_H][MAT_W]; // the game field matrix
 static int points = 0;
-// the tetrominos
-static Tetromino t_blue;
-static Tetromino t_yellow;
-static Tetromino t_orange;
-static Tetromino t_green;
-static Tetromino t_pink;
 static Tetromino* pieces;
 
 // game
@@ -130,14 +124,18 @@ int menu() {
 }
 
 void singlePlayer() {
+    Tetromino t;
+
     clear();
     refresh();
     initTetrominos();
-    selectTetromino();
+    t = selectTetromino();
 }
 
 void initTetrominos() {
-    t_blue =(Tetromino) {
+    pieces =(Tetromino*) malloc(sizeof(Tetromino) * 5);
+
+    pieces[0] =(Tetromino) {
         .stock = PIECES_STOCK,
         .color = COLOR_CYAN,
         .type = 1,
@@ -148,7 +146,7 @@ void initTetrominos() {
             { .x = 3, .y = 0 }
         }
     };
-    t_yellow =(Tetromino) {
+    pieces[1] =(Tetromino) {
         .stock = PIECES_STOCK,
         .color = COLOR_YELLOW,
         .type = 2,
@@ -159,7 +157,7 @@ void initTetrominos() {
             { .x = 1, .y = 1 }
         }
     };
-    t_orange =(Tetromino) {
+    pieces[2] =(Tetromino) {
         .stock = PIECES_STOCK,
         .color = COLOR_RED,
         .type = 3,
@@ -170,7 +168,7 @@ void initTetrominos() {
             { .x = 1, .y = 2 }
         }
     };
-    t_green =(Tetromino) {
+    pieces[3] =(Tetromino) {
         .stock = PIECES_STOCK,
         .color = COLOR_CYAN,
         .type = 4,
@@ -181,7 +179,7 @@ void initTetrominos() {
             { .x = 1, .y = 2 }
         }
     };
-    t_pink =(Tetromino) {
+    pieces[4] =(Tetromino) {
         .stock = PIECES_STOCK,
         .color = COLOR_MAGENTA,
         .type = 5,
@@ -192,13 +190,6 @@ void initTetrominos() {
             { .x = 1, .y = 1 }
         }
     };
-
-    pieces =(Tetromino*) malloc(sizeof(Tetromino) * 5);
-    pieces[0] = t_blue;
-    pieces[1] = t_yellow;
-    pieces[2] = t_orange;
-    pieces[3] = t_green;
-    pieces[4] = t_pink;
 }
 
 Tetromino selectTetromino() {
@@ -211,11 +202,13 @@ Tetromino selectTetromino() {
     wrefresh(selectWindow);
 
     while(key != ENTER) {
+        // print text
         mvwprintw(selectWindow, 1, 1, " SELECT A PIECE ");
         mvwprintw(selectWindow, 5, 40, "->");
         mvwprintw(selectWindow, 5, 10, "<-");
+        mvwprintw(selectWindow, 8, 1, "%d remaining piece of this type", pieces[highlight].stock);
         // print the piece
-        printTetromino(highlight, selectWindow, 25, 5);
+        printTetromino(pieces[highlight], selectWindow, 25, 5);
         // get the key
         key = wgetch(selectWindow);
         switch(key) {
@@ -237,13 +230,14 @@ Tetromino selectTetromino() {
         wrefresh(selectWindow);
     }
 
+    pieces[highlight].stock--;
+
     return pieces[highlight];
 }
 
-void printTetromino(int pieceIndex, WINDOW* window, int x, int y) {
+void printTetromino(Tetromino t, WINDOW* window, int x, int y) {
     int i;
 
-    Tetromino t = pieces[pieceIndex];
     init_pair(t.type, t.color, t.color);
     wattron(window, COLOR_PAIR(t.type));
     for (i = 0; i < SHAPE_COORDS_COUNT; i++) {

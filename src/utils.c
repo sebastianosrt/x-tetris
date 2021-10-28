@@ -1,3 +1,5 @@
+#include "utils.h"
+
 int calcPieceHeight(Tetromino t) {
     int h = 0, i = 0;
     for (i = 0; i < SHAPE_COORDS_COUNT; i++)
