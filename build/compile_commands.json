@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/kali/x-tetris/build",
+  "command": "/bin/clang-9   -g -std=gnu90 -o CMakeFiles/x_tetris.dir/main.c.o -c /home/kali/x-tetris/main.c",
+  "file": "/home/kali/x-tetris/main.c"
+}
+]

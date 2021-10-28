@@ -1,0 +1,1 @@
+/bin/clang-9 -g CMakeFiles/x_tetris.dir/main.c.o -o x_tetris  -lcurses /usr/lib/x86_64-linux-gnu/libform.so 

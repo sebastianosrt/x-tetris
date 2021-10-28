@@ -1,0 +1,3 @@
+/home/kali/x-tetris/build/CMakeFiles/rebuild_cache.dir
+/home/kali/x-tetris/build/CMakeFiles/edit_cache.dir
+/home/kali/x-tetris/build/CMakeFiles/x_tetris.dir

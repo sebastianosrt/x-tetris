@@ -1,0 +1,1 @@
+cmake .. && cmake --build . && ./x_tetris 
