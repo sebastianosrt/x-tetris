@@ -4,4 +4,5 @@
 #define MAT_W 10
 #define MAT_H 15
 #define PIECES 5
-#define SHAPE_COORDS_COUNT 4
+#define SHAPE_BLOCKS 4
+#define KEY_TAB 9

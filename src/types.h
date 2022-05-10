@@ -1,13 +1,9 @@
-struct coord {
-    int x;
-    int y;
-};
-typedef struct coord Coord;
-
 struct tetromino {
     int color;
     int type;
     int stock;
-    Coord shape[SHAPE_COORDS_COUNT];
+    int x;
+    int y;
+    int grid[4][4];
 };
 typedef struct tetromino Tetromino;
