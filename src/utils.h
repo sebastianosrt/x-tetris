@@ -1,3 +1,7 @@
+#include "types.h"
+#include "constants.h"
+#include <curses.h>
+
 /**
  * @brief moves a tetromino one unit down
  *
@@ -98,3 +102,11 @@ void printField(int mat[MAT_H][MAT_W], WINDOW* win);
  * @param n the number of rows to invert
  */
 void invertRows(int mat[MAT_H][MAT_W], int n);
+
+/**
+ * @brief moves a piece
+ * 
+ * @param key the direction
+ * @param t the tetromino to move
+ */
+void moveT(int key, Tetromino* t);

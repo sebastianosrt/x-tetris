@@ -15,7 +15,6 @@ void moveRight(Tetromino* t) {
 
 void rotateMatrix(int grid[4][4]) {
     int i, j, tmp;
-    // transposed matrix
     for (i = 0; i < SHAPE_BLOCKS; i++) {
         for (j = i; j < SHAPE_BLOCKS; j++) {
             tmp = grid[i][j];
@@ -23,7 +22,6 @@ void rotateMatrix(int grid[4][4]) {
             grid[j][i] = tmp;
         }
     }
-    // horizontal flip
     for (i = 0; i < SHAPE_BLOCKS; i++) {
         for (j = 0; j < SHAPE_BLOCKS/2; j++) {
             tmp = grid[i][j];
@@ -69,15 +67,12 @@ int checkCollision(Tetromino* t, int dir, int mat[MAT_H][MAT_W]) {
             }
             break;
         case KEY_UP:
-            // copy the grid
             for (i = 0; i < 4; i++) {
                 for (j = 0; j < 4; j++) {
                     grid[i][j] = t->grid[i][j];
                 }
             }
-            // rotate it
             rotateMatrix(grid);
-            // check
             for (i = 0; i < 4; i++) {
                 for (j = 0; j < 4; j++) {
                     if (grid[i][j] != 0 && t->y+i < MAT_H && t->x+j < MAT_W && (mat[t->y + i][t->x + j] == -1 || mat[t->y + i][t->x + j] > 0)) {
@@ -198,7 +193,7 @@ void clearRow(int mat[MAT_H][MAT_W], int col) {
 int boardFull(int mat[MAT_H][MAT_W]) {
     int i;
     for (i = MAT_W / 2 - 4; i <= MAT_W / 2 + 4; i++) {
-        if (mat[3][i] > 0)
+        if (mat[2][i] > 0)
             return 1;
     }
     return 0;
@@ -219,5 +214,21 @@ void printField(int mat[MAT_H][MAT_W], WINDOW* win) {
                 wattroff(win, COLOR_PAIR(mat[i][j]));
             }
         }
+    }
+}
+
+void moveT(int key, Tetromino* t) {
+    switch(key) {
+        case KEY_LEFT:
+            moveLeft(t);
+            break;
+        case KEY_RIGHT:
+            moveRight(t);
+            break;
+        case KEY_UP:
+            rotate(t);
+            break;
+        default:
+            break;
     }
 }
