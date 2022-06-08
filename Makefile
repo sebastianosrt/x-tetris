@@ -1,5 +1,8 @@
 FLAGS=-c -ansi -lncurses -o
 
+execute: x-tetris
+	./x-tetris && make clean
+
 x-tetris: main.o game.o utils.o print.o tetromino.o
 	gcc main.o game.o utils.o print.o tetromino.o -lncurses -o x-tetris
 
