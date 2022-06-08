@@ -1,13 +1,22 @@
 FLAGS=-c -ansi -lncurses -o
 
-x-tetris: main.o utils.o
-	gcc main.o utils.o -lncurses -o x-tetris
+x-tetris: main.o game.o utils.o print.o tetromino.o
+	gcc main.o game.o utils.o print.o tetromino.o -lncurses -o x-tetris
 
-main.o: src/main.c src/utils.h
+main.o: src/main.c
 	gcc src/main.c $(FLAGS) main.o
 
-utils.o: src/utils.c src/utils.h src/constants.h src/types.h
-	gcc src/utils.c $(FLAGS) utils.o
+game.o: src/impl/game.c src/headers/game.h tetromino.o utils.o print.o
+	gcc src/impl/game.c $(FLAGS) game.o
+
+utils.o: src/impl/utils.c tetromino.o
+	gcc src/impl/utils.c $(FLAGS) utils.o
+
+print.o: src/impl/print.c src/headers/print.h tetromino.o
+	gcc src/impl/print.c $(FLAGS) print.o
+
+tetromino.o: src/impl/tetromino.c src/headers/tetromino.h src/headers/constants.h
+	gcc src/impl/tetromino.c $(FLAGS) tetromino.o
 
 clean:
 	rm -rf *.o x-tetris

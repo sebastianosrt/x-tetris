@@ -1,4 +1,4 @@
-#define MENU_CHOICES 3
+#define MENU_CHOICES 4
 #define ENTER 10
 #define PIECES_STOCK 20
 #define MAT_W 10

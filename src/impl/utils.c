@@ -1,39 +1,8 @@
-#include "utils.h"
-#include "math.h"
-
-void moveDown(Tetromino* t) {
-    t->y++;
-}
-
-void moveLeft(Tetromino* t) {
-    t->x--;
-}
-
-void moveRight(Tetromino* t) {
-    t->x++;
-}
-
-void rotateMatrix(int grid[4][4]) {
-    int i, j, tmp;
-    for (i = 0; i < SHAPE_BLOCKS; i++) {
-        for (j = i; j < SHAPE_BLOCKS; j++) {
-            tmp = grid[i][j];
-            grid[i][j] = grid[j][i];
-            grid[j][i] = tmp;
-        }
-    }
-    for (i = 0; i < SHAPE_BLOCKS; i++) {
-        for (j = 0; j < SHAPE_BLOCKS/2; j++) {
-            tmp = grid[i][j];
-            grid[i][j] = grid[i][SHAPE_BLOCKS - 1 - j];
-            grid[i][SHAPE_BLOCKS - 1 - j] = tmp;
-        }
-    }
-}
-
-void rotate(Tetromino* t) {
-    rotateMatrix(t->grid);
-}
+/*
+ * @file utils.c
+ * @brief this file contains the implementation of the functions declared in utils.h
+ */
+#include "../headers/utils.h"
 
 int checkCollision(Tetromino* t, int dir, int mat[MAT_H][MAT_W]) {
     int i, j;
@@ -85,17 +54,6 @@ int checkCollision(Tetromino* t, int dir, int mat[MAT_H][MAT_W]) {
             break;
     }
     return 0;
-}
-
-void saveTetromino(Tetromino* t, int mat[MAT_H][MAT_W]) {
-    int i, j;
-    for (i = 0; i < SHAPE_BLOCKS; i++) {
-        for (j = 0; j < SHAPE_BLOCKS; j++) {
-            if (t->grid[i][j] != 0) {
-                mat[t->y+i][t->x+j] = t->grid[i][j];
-            }
-        }
-    }
 }
 
 int checkRows(int mat[MAT_H][MAT_W]) {
@@ -199,36 +157,18 @@ int boardFull(int mat[MAT_H][MAT_W]) {
     return 0;
 }
 
-void printField(int mat[MAT_H][MAT_W], WINDOW* win) {
-    int i, j;
-    for (i = 0; i < MAT_H; i++) {
-        for (j = 0; j < MAT_W; j++) {
-            if (mat[i][j] == -1) {
-                wattron(win, COLOR_PAIR(100));
-                mvwaddstr(win, i, j*2, "  ");
-                wattroff(win, COLOR_PAIR(100));
-            }
-            if (mat[i][j] > 0) {
-                wattron(win, COLOR_PAIR(mat[i][j]));
-                mvwaddstr(win, i, j*2, "##");
-                wattroff(win, COLOR_PAIR(mat[i][j]));
-            }
-        }
-    }
+void clearScreen() {
+    clear();
+    refresh();
 }
 
-void moveT(int key, Tetromino* t) {
-    switch(key) {
-        case KEY_LEFT:
-            moveLeft(t);
-            break;
-        case KEY_RIGHT:
-            moveRight(t);
-            break;
-        case KEY_UP:
-            rotate(t);
-            break;
-        default:
-            break;
-    }
+void refreshWindow(WINDOW* window, Tetromino t, int mat[MAT_H][MAT_W]) {
+    wclear(window);
+    printField(mat, window);
+    printTetromino(t, window);
+    wrefresh(window);
+}
+
+int tetrominosStock(Tetromino* pieces) {
+    return pieces[0].stock + pieces[1].stock + pieces[2].stock + pieces[3].stock + pieces[4].stock;
 }
