@@ -1,3 +1,7 @@
+/**
+ * @file tetromino.h
+ * @brief this file contains the Tetromino type and the declarations of the functions used to move it across the board
+ */
 #include <ncurses.h>
 #include "constants.h"
 

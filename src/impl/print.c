@@ -1,3 +1,7 @@
+/**
+ * @file print.c
+ * @brief this file contains the implementation of the functions declared in print.h
+ */
 #include "../headers/print.h"
 
 void printBanner() {

@@ -1,3 +1,7 @@
+/**
+ * @file print.h
+ * @brief this file contains the declarations of the functions that print something to the screen
+ */
 #include "tetromino.h"
 
 /**

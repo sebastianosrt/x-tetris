@@ -1,3 +1,7 @@
+/**
+ * @file utils.h
+ * @brief this file contains the declarations of utility functions
+ */
 #include "tetromino.h"
 
 /*
@@ -45,7 +49,7 @@ void clearRow(int mat[MAT_H][MAT_W], int col);
  * @param mat the matrix
  * @return 1 if the board is full, else 0
  */
-int boardFull();
+int boardFull(int mat[MAT_H][MAT_W]);
 
 /**
  * @brief inverts n rows
@@ -61,6 +65,13 @@ void invertRows(int mat[MAT_H][MAT_W], int n);
 void clearScreen();
 
 /**
+ * @brief clears and refreshes a window
+ * 
+ * @param w the window to clear
+ */
+void clearWindow(WINDOW* w);
+
+/**
  * @brief refreshes a game window
  * 
  * @param win the window
@@ -73,5 +84,6 @@ void refreshWindow(WINDOW* window, Tetromino t, int mat[MAT_H][MAT_W]);
  * @brief returns the total number of tetrominos
  * 
  * @param pieces an array containing the 4 tetrominos
+ * @return the total number of tetrominos
  */
 int tetrominosStock(Tetromino* pieces);

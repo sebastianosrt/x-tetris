@@ -150,16 +150,20 @@ void clearRow(int mat[MAT_H][MAT_W], int col) {
 
 int boardFull(int mat[MAT_H][MAT_W]) {
     int i;
-    for (i = MAT_W / 2 - 4; i <= MAT_W / 2 + 4; i++) {
+    for (i = MAT_W / 2 - 4; i <= MAT_W / 2 + 4; i++)
         if (mat[2][i] > 0)
             return 1;
-    }
     return 0;
 }
 
 void clearScreen() {
     clear();
     refresh();
+}
+
+void clearWindow(WINDOW* w) {
+    wclear(w);
+    wrefresh(w);
 }
 
 void refreshWindow(WINDOW* window, Tetromino t, int mat[MAT_H][MAT_W]) {

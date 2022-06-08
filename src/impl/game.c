@@ -144,7 +144,7 @@ int menu() {
             case KEY_UP:
                 highlight--;
                 if (highlight == -1)
-                    highlight = 2;
+                    highlight = 3;
                 break;
             case KEY_DOWN:
                 highlight++;
@@ -166,10 +166,52 @@ void play() {
     initMatrix();
 }
 
+int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win, WINDOW* pointsWin) {
+    int key;
+    *t = pieces[*pieceIndex];
+    wtimeout(win, -1);
+
+    refreshWindow(win, *t, mat);
+    do {
+        while (t->stock == 0) {
+            (*pieceIndex)++;
+            if (*pieceIndex > 4)
+                *pieceIndex = 0;
+            *t = pieces[*pieceIndex];
+        }
+        refreshWindow(win, *t, mat);
+        key = wgetch(win);
+
+        if (key == KEY_TAB) {
+            do {
+                (*pieceIndex)++;
+                if (*pieceIndex > 4)
+                    *pieceIndex = 0;
+                *t = pieces[*pieceIndex];
+            } while(t->stock == 0);
+            refreshWindow(win, *t, mat);
+        }
+    } while(key == KEY_TAB);
+    if (key != 'q') {
+        pieces[*pieceIndex].stock--;
+        do {
+            moveDown(t);
+            wtimeout(win, 100);
+            key = wgetch(win);
+            if (!checkCollision(t, key, mat))
+                moveT(key, t);
+            refreshWindow(win, *t, mat);
+        } while(!checkCollision(t, KEY_DOWN, mat) && key != 'q');
+        saveTetromino(t, mat);
+    }
+
+    return key == 'q' ? 1 : 0;
+}
+
 void singlePlayer() {
     WINDOW* gameWindow = newwin(MAT_H*2, MAT_W*2, 0, 0);
     WINDOW* pointsWindow = newwin(50, 50, 0, MAT_W*2);
-    int key;
+    int exit = 0;
     int i = 0, j = 0;
     int pieceIndex = 0;
     Tetromino t;
@@ -177,60 +219,12 @@ void singlePlayer() {
     points = 0;
     keypad(gameWindow, true);
     do {
-        t = pieces[pieceIndex];
-        wtimeout(gameWindow, -1);
-
-        do {
-            while (t.stock == 0) {
-                pieceIndex++;
-                if (pieceIndex > 4)
-                    pieceIndex = 0;
-                t = pieces[pieceIndex];
-            }
-            refreshWindow(gameWindow, t, mat);
-            printPoints(pieces, pointsWindow, points);
-            key = wgetch(gameWindow);
-
-            if (key == KEY_TAB) {
-                do {
-                    pieceIndex++;
-                    if (pieceIndex > 4)
-                        pieceIndex = 0;
-                    t = pieces[pieceIndex];
-                } while(t.stock == 0);
-            }
-        } while(key == KEY_TAB);
-        pieces[pieceIndex].stock--;
-
-        do {
-            moveDown(&t);
-            wtimeout(gameWindow, 100);
-            key = wgetch(gameWindow);
-            if (!checkCollision(&t, key, mat)) {
-                switch(key) {
-                    case KEY_LEFT:
-                        moveLeft(&t);
-                        break;
-                    case KEY_RIGHT:
-                        moveRight(&t);
-                        break;
-                    case KEY_UP:
-                        rotate(&t);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            refreshWindow(gameWindow, t, mat);
-        } while(!checkCollision(&t, KEY_DOWN, mat) && key != 'q');
-        saveTetromino(&t, mat);
         points += checkRows(mat);
         printPoints(pieces, pointsWindow, points);
-    } while(!boardFull(mat) && tetrominosStock(pieces) > 0 && key != 'q');
-    wclear(gameWindow);
-    wclear(pointsWindow);
-    wrefresh(gameWindow);
-    wrefresh(pointsWindow);
+        exit = playTurn(mat, &t, &pieceIndex, gameWindow, pointsWindow);
+    } while(!boardFull(mat) && tetrominosStock(pieces) > 0 && !exit);
+    clearWindow(gameWindow);
+    clearWindow(pointsWindow);
     gameOver();
 }
 
@@ -238,7 +232,7 @@ void playerVsPlayer() {
     WINDOW* gameWindow = newwin(MAT_H*2, MAT_W*2, 0, 0);
     WINDOW* pointsWindow = newwin(50, 45, 0, MAT_W*2);
     WINDOW* gameWindow2 = newwin(MAT_H*2, MAT_W*2, 0, MAT_W*2 + 48);
-    int key;
+    int exit = 0;
     int i = 0, j = 0;
     int pieceIndex1 = 0, pieceIndex2 = 0;
     Tetromino t1, t2;
@@ -254,94 +248,23 @@ void playerVsPlayer() {
 
     refreshWindow(gameWindow, t1, mat);
     refreshWindow(gameWindow2, t2, mat2);
+    printPointsMultiPlayer(pieces, pointsWindow, points, points2);
     do {
         if (!turn) {
-            t1 = pieces[pieceIndex1];
-            wtimeout(gameWindow, -1);
-
-            do {
-                while (t1.stock == 0) {
-                    pieceIndex1++;
-                    if (pieceIndex1 > 4)
-                        pieceIndex1 = 0;
-                    t1 = pieces[pieceIndex1];
-                }
-                refreshWindow(gameWindow, t1, mat);
-                printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-                key = wgetch(gameWindow);
-
-                if (key == KEY_TAB) {
-                    do {
-                        pieceIndex1++;
-                        if (pieceIndex1 > 4)
-                            pieceIndex1 = 0;
-                        t1 = pieces[pieceIndex1];
-                    } while(t1.stock == 0);
-                }
-            } while(key == KEY_TAB);
-            pieces[pieceIndex1].stock--;
-
-            do {
-                moveDown(&t1);
-                wtimeout(gameWindow, 100);
-                key = wgetch(gameWindow);
-                if (!checkCollision(&t1, key, mat))
-                    moveT(key, &t1);
-                refreshWindow(gameWindow, t1, mat);
-            } while(!checkCollision(&t1, KEY_DOWN, mat) && key != 'q');
-            saveTetromino(&t1, mat);
-            points += checkRowsMultiplayer(mat, mat2);
+            exit = playTurn(mat, &t1, &pieceIndex1, gameWindow, pointsWindow);
             printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-
+            points += checkRowsMultiplayer(mat, mat2);
             turn = 1;
         } else {
-            t2 = pieces[pieceIndex2];
-            wtimeout(gameWindow2, -1);
-
-            do {
-                while (t2.stock == 0) {
-                    pieceIndex2++;
-                    if (pieceIndex2 > 4)
-                        pieceIndex2 = 0;
-                    t2 = pieces[pieceIndex2];
-                }
-                refreshWindow(gameWindow2, t2, mat2);
-                printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-                key = wgetch(gameWindow2);
-
-                if (key == KEY_TAB) {
-                    do {
-                        pieceIndex2++;
-                        if (pieceIndex2 > 4)
-                            pieceIndex2 = 0;
-                        t2 = pieces[pieceIndex2];
-                    } while(t2.stock == 0);
-                }
-            } while(key == KEY_TAB);
-            pieces[pieceIndex2].stock--;
-
-            do {
-                moveDown(&t2);
-                wtimeout(gameWindow2, 100);
-                key = wgetch(gameWindow2);
-                if (!checkCollision(&t2, key, mat2)) {
-                    moveT(key, &t2);
-                }
-                refreshWindow(gameWindow2, t2, mat2);
-            } while(!checkCollision(&t2, KEY_DOWN, mat2) && key != 'q');
-            saveTetromino(&t2, mat2);
-            points2 += checkRowsMultiplayer(mat2, mat);
+            exit = playTurn(mat2, &t2, &pieceIndex2, gameWindow2, pointsWindow);
             printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-            
+            points2 += checkRowsMultiplayer(mat2, mat);
             turn = 0;
         }
-    } while(!boardFull(mat) && !boardFull(mat2) && tetrominosStock(pieces) > 0 && key != 'q');
-    wclear(gameWindow);
-    wclear(gameWindow2);
-    wclear(pointsWindow);
-    wrefresh(gameWindow);
-    wrefresh(gameWindow2);
-    wrefresh(pointsWindow);
+    } while(!boardFull(mat) && !boardFull(mat2) && tetrominosStock(pieces) > 0 && !exit);
+    clearWindow(gameWindow);
+    clearWindow(gameWindow2);
+    clearWindow(pointsWindow);
     gameOverMultiplayer();
 }
 
@@ -429,12 +352,9 @@ void playerVsCpu() {
             turn = 0;
         }
     } while(!boardFull(mat) && !boardFull(mat2) && tetrominosStock(pieces) > 0 && key != 'q');
-    wclear(gameWindow);
-    wclear(gameWindow2);
-    wclear(pointsWindow);
-    wrefresh(gameWindow);
-    wrefresh(gameWindow2);
-    wrefresh(pointsWindow);
+    clearWindow(gameWindow);
+    clearWindow(gameWindow2);
+    clearWindow(pointsWindow);
     gameOverMultiplayer();
 }
 

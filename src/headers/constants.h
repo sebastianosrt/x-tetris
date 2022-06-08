@@ -1,3 +1,8 @@
+/**
+ * @file constants.h
+ * @brief this file contains the constants used in the game
+ */
+
 #define MENU_CHOICES 4
 #define ENTER 10
 #define PIECES_STOCK 20
