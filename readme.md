@@ -10,7 +10,7 @@ Written in ANSI C. University project, 1st year.
 1. Install the dependencies
 2. Download the repository
     ```
-    git clone https://github.com/Filibertoo/tetris
+    git clone https://github.com/sebastianosrt/x-tetris
     ```
 3. Compile and execute
     ```
