@@ -12,8 +12,6 @@
 typedef struct {
     /** @param type the tetromino's unique number */
     int type;
-    /** @param color the tetromino's color */
-    int color;
     /** @param stock the remaining pieces */
     int stock;
     /** @param x the number of columns from the left of the field to the start of the tetromino */

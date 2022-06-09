@@ -51,7 +51,6 @@ void initTetrominos() {
 
     pieces[0] =(Tetromino) {
         .stock = PIECES_STOCK,
-        .color = COLOR_CYAN,
         .type = 1,
         .x = MAT_W / 2 - 2,
         .y = -1,
@@ -64,7 +63,6 @@ void initTetrominos() {
     };
     pieces[1] =(Tetromino) {
         .stock = PIECES_STOCK,
-        .color = COLOR_YELLOW,
         .type = 2,
         .x = MAT_W / 2 - 2,
         .y = -1,
@@ -77,7 +75,6 @@ void initTetrominos() {
     };
     pieces[2] =(Tetromino) {
         .stock = PIECES_STOCK,
-        .color = COLOR_RED,
         .type = 3,
         .x = MAT_W / 2 - 2,
         .y = -1,
@@ -90,7 +87,6 @@ void initTetrominos() {
     };
     pieces[3] =(Tetromino) {
         .stock = PIECES_STOCK,
-        .color = COLOR_CYAN,
         .type = 4,
         .x = MAT_W / 2 - 2,
         .y = -1,
@@ -103,7 +99,6 @@ void initTetrominos() {
     };
     pieces[4] =(Tetromino) {
         .stock = PIECES_STOCK,
-        .color = COLOR_MAGENTA,
         .type = 5,
         .x = MAT_W / 2 - 2,
         .y = -1,
