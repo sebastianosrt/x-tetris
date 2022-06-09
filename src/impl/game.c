@@ -1,4 +1,4 @@
-/*
+/**
  * @file game.c
  * @brief this file contains the implementation of the functions declared in game.h
  */
@@ -7,9 +7,9 @@
 /* static variables */
 static int mat[MAT_H][MAT_W]; /* the game field matrix */
 static int mat2[MAT_H][MAT_W]; /* the game field matrix for multiplayer */
-static int points = 0;
-static int points2 = 0;
-static Tetromino* pieces;
+static int points = 0; /* player1 points */
+static int points2 = 0; /* player2 points */
+static Tetromino* pieces; /* array containing the 4 tetrominos */
 
 void init() {
     initscr();
@@ -194,12 +194,16 @@ int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win, 
     } while(key == KEY_TAB);
     if (key != 'q') {
         pieces[*pieceIndex].stock--;
+        if (key == KEY_DOWN)
+            key = 0;
         do {
             moveDown(t);
-            wtimeout(win, 100);
-            key = wgetch(win);
-            if (!checkCollision(t, key, mat))
-                moveT(key, t);
+            if (key != KEY_DOWN) {
+                wtimeout(win, 100);
+                key = wgetch(win);
+                if (!checkCollision(t, key, mat))
+                    moveT(key, t);
+            }
             refreshWindow(win, *t, mat);
         } while(!checkCollision(t, KEY_DOWN, mat) && key != 'q');
         saveTetromino(t, mat);

@@ -1,4 +1,4 @@
-/*
+/**
  * @file utils.c
  * @brief this file contains the implementation of the functions declared in utils.h
  */

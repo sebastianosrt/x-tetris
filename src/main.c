@@ -1,43 +1,43 @@
 /**
  * @file main.c
- * @brief 
+ * @brief main file of the game
  * @author Sebastiano Sartor
  * @mainpage X-Tetris
  * @section Intro
- * X-Tetris in C
+ * X-Tetris in game written in ANSI C
  * @section Dependencies
  *
  * <ul>
  *      <li>MinGW (for windows users)</li>
- *      <li>ncurses <a href="https://e-l.unifi.it/pluginfile.php/805205/mod_resource/content/0/ncurses%20installation%20-%20en.pdf">tutorial</a></li>
+ *      <li>Ncurses: <a href="https://e-l.unifi.it/pluginfile.php/805205/mod_resource/content/0/ncurses%20installation%20-%20en.pdf">how to install</a></li>
+ *      <li>Make</li>
  * </ul>
  *
- * @section How to run the game
+ * @section HOW How to run the game
  * <ol>
  *      <li>
- *          <span>Download the repository</span>
+ *          <span>Download the repository:</span>
+ *          <br>
  *          <code>git clone https://github.com/sebastianosrt/x-tetris</code>
  *      </li>
- *      <br />
  *      <li>
  *          <span>Compile and execute the game</span>
- *      </li>
- *      <li>
+ *          <br>
  *          <code>cd x-tetris</code>
- *          <code>make</code>
- *          <code>./x-tetris</code>
+ *          <br>
+ *          <code>make</code> 
  *      </li>
  * </ol>
  *
  * @section Commands
- * <br />
  *
  * <ul>
- *     <li><code>ESC</code>: end the match</li>
- *     <li><code>UP</code>: rotate tetromino</li>
- *     <li><code>LEFT</code>: move left</li>
- *     <li><code>RIGHT</code>: move right</li>
+ *     <li><code>KEY UP</code>: rotate tetromino/move up in the menu</li>
+ *     <li><code>KEY DOWN</code>: place the tetromino/move down in the menu</li>
+ *     <li><code>KEY LEFT</code>: move left</li>
+ *     <li><code>KEY RIGHT</code>: move right</li>
  *     <li><code>TAB</code>: switch tetromino</li>
+ *     <li><code>Q</code>: end the match</li>
  * </ul>
  *
  */

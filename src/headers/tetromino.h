@@ -6,26 +6,21 @@
 #include "constants.h"
 
 /**
- * @file tetromino.h
- * @brief this file contains the tetromino type and the declarations of the functions used to move it across the game board
- */
-
-/**
  * @struct Tetromino
- * 
- * @param type the tetromino's unique number
- * @param color the tetromino's color
- * @param stock the remaining pieces
- * @param x the number of columns from the left of the field to the start of the tetromino
- * @param y the number of rows from the top of the field to the start of the tetromino
- * @param grid the representation of the tetromino
+ * @brief tetromino type
  */
-typedef struct tetromino {
+typedef struct {
+    /** @param type the tetromino's unique number */
     int type;
+    /** @param color the tetromino's color */
     int color;
+    /** @param stock the remaining pieces */
     int stock;
+    /** @param x the number of columns from the left of the field to the start of the tetromino */
     int x;
+    /** @param y the number of rows from the top of the field to the start of the tetromino */
     int y;
+    /** @param grid the representation of the tetromino */
     int grid[4][4];
 } Tetromino;
 

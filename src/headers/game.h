@@ -41,6 +41,7 @@ void play();
 /**
  * @brief plays a turn
  * 
+ * @param mat the game board matrix
  * @param t a tetromino
  * @param pieceIndex pointer to the index of the tetromino
  * @param win the game window

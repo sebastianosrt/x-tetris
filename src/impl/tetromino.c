@@ -1,4 +1,4 @@
-/*
+/**
  * @file tetromino.c
  * @brief implementation of the functions definited in tetromino.h
  */

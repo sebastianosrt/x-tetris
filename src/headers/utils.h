@@ -4,7 +4,7 @@
  */
 #include "tetromino.h"
 
-/*
+/**
  * @file utils.h
  * @brief this file contains the definitions of the utility functions
  */
@@ -30,7 +30,8 @@ int checkRows(int mat[MAT_H][MAT_W]);
 /**
  * @brief checks if a row is complete and clears it
  * 
- * @param mat the matrix
+ * @param mat the matrix of player1
+ * @param mat2 the matrix of player2
  * @return points
  */
 int checkRowsMultiplayer(int mat[MAT_H][MAT_W], int mat2[MAT_H][MAT_W]);
@@ -74,7 +75,7 @@ void clearWindow(WINDOW* w);
 /**
  * @brief refreshes a game window
  * 
- * @param win the window
+ * @param window the window
  * @param t a tetromino
  * @param mat the matrix
  */
