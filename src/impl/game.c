@@ -5,7 +5,7 @@
 #include "../headers/game.h"
 
 /* static variables */
-static Tetromino* pieces; /* array containing the 4 tetrominos */
+static Tetromino* pieces = NULL; /* array containing the 4 tetrominos */
 
 void init() {
     initscr();
@@ -39,7 +39,8 @@ void initMatrix(int mat[MAT_H][MAT_W]) {
 }
 
 void initTetrominos() {
-    pieces =(Tetromino*) malloc(sizeof(Tetromino) * 5);
+    if (pieces == NULL)
+        pieces =(Tetromino*) malloc(sizeof(Tetromino) * 5);
 
     pieces[0] =(Tetromino) {
         .stock = PIECES_STOCK,
@@ -185,7 +186,7 @@ int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win) 
         do {
             moveDown(t);
             if (key != KEY_DOWN) {
-                wtimeout(win, 100);
+                wtimeout(win, 140);
                 key = wgetch(win);
                 if (!checkCollision(t, key, mat))
                     moveT(key, t);
