@@ -57,10 +57,10 @@ int main(int argc, char** argv) {
                 singlePlayer();
                 break;
             case 1:
-                playerVsPlayer();
+                multiPlayer(0);
                 break;
             case 2:
-                playerVsCpu();
+                multiPlayer(1);
                 break;
             default:
                 break;

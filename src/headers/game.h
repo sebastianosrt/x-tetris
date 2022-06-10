@@ -17,8 +17,10 @@ void init();
 void initColors();
 /**
  * @brief initializes the game board
+ * 
+ * @param mat the matrix to initialize
  */
-void initMatrix();
+void initMatrix(int mat[MAT_H][MAT_W]);
 /**
  * @brief initializes the tetrominos
  */
@@ -45,27 +47,37 @@ void play();
  * @param t a tetromino
  * @param pieceIndex pointer to the index of the tetromino
  * @param win the game window
- * @param pointsWin the points window
  * @return returns 1 if exit is pressed
  */
-int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win, WINDOW* pointsWin);
+int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win);
+/**
+ * @brief plays the cpu turn
+ * 
+ * @param mat the game board matrix
+ * @param t a tetromino
+ * @param win the game window
+ */
+void playTurnCPU(int mat[MAT_H][MAT_W], Tetromino* t, WINDOW* win);
 /**
  * @brief single player mode
  */
 void singlePlayer();
 /**
- * @brief 2 playes mode
+ * @brief 2 players mode
+ * 
+ * @param cpu set at 1 to select player vs cpu mode
  */
-void playerVsPlayer();
-/**
- * @brief player vs CPU mode
- */
-void playerVsCpu();
+void multiPlayer(int cpu);
 /**
  * @brief shows the gameover screen for the single player mode
+ * 
+ * @param points the player's points
  */
-void gameOver();
+void gameOver(int points);
 /**
  * @brief shows the gameover screen for the 2 player mode
+ * 
+ * @param points the playes1's points
+ * @param points2 the playes2's points
  */
-void gameOverMultiplayer();
+void gameOverMultiplayer(int points, int points2);

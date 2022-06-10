@@ -5,10 +5,6 @@
 #include "../headers/game.h"
 
 /* static variables */
-static int mat[MAT_H][MAT_W]; /* the game field matrix */
-static int mat2[MAT_H][MAT_W]; /* the game field matrix for multiplayer */
-static int points = 0; /* player1 points */
-static int points2 = 0; /* player2 points */
 static Tetromino* pieces; /* array containing the 4 tetrominos */
 
 void init() {
@@ -30,18 +26,14 @@ void initColors() {
     init_pair(5, COLOR_MAGENTA, COLOR_MAGENTA);
 }
 
-void initMatrix() {
+void initMatrix(int mat[MAT_H][MAT_W]) {
     int i, j;
     for (i = 0; i < MAT_H; i++) {
         for (j = 0; j < MAT_W; j++) {
-            if (j == 0 || j == MAT_W-1 || i == MAT_H-1) {
+            if (j == 0 || j == MAT_W-1 || i == MAT_H-1)
                 mat[i][j] = -1;
-                mat2[i][j] = -1;
-            }
-            else {
+            else
                 mat[i][j] = 0;
-                mat2[i][j] = 0;
-            }
         }
     }
 }
@@ -158,10 +150,9 @@ int menu() {
 void play() {
     clearScreen();
     initTetrominos();
-    initMatrix();
 }
 
-int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win, WINDOW* pointsWin) {
+int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win) {
     int key;
     *t = pieces[*pieceIndex];
     wtimeout(win, -1);
@@ -207,41 +198,66 @@ int playTurn(int mat[MAT_H][MAT_W], Tetromino* t, int* pieceIndex, WINDOW* win, 
     return key == 'q' ? 1 : 0;
 }
 
+void playTurnCPU(int mat[MAT_H][MAT_W], Tetromino* t, WINDOW* win) {
+    int pieceIndex;
+    do {
+        pieceIndex = rand() % 4;
+    } while (pieces[pieceIndex].stock == 0);
+    *t = pieces[pieceIndex];
+    pieces[pieceIndex].stock--;            
+    refreshWindow(win, *t, mat);
+    int dirs[3] = {KEY_LEFT, KEY_RIGHT, KEY_UP};
+    int key;
+    do {
+        moveDown(t);
+        key = dirs[rand() % 3];
+        if (!checkCollision(t, key, mat))
+            moveT(key, t);
+        refreshWindow(win, *t, mat);
+    } while(!checkCollision(t, KEY_DOWN, mat));
+    saveTetromino(t, mat);
+}
+
 void singlePlayer() {
+    int mat[MAT_H][MAT_W];
     WINDOW* gameWindow = newwin(MAT_H*2, MAT_W*2, 0, 0);
     WINDOW* pointsWindow = newwin(50, 50, 0, MAT_W*2);
     int exit = 0;
     int i = 0, j = 0;
     int pieceIndex = 0;
+    int points = 0;
     Tetromino t;
 
-    points = 0;
+    initMatrix(mat);
     keypad(gameWindow, true);
     do {
         points += checkRows(mat);
         printPoints(pieces, pointsWindow, points);
-        exit = playTurn(mat, &t, &pieceIndex, gameWindow, pointsWindow);
+        exit = playTurn(mat, &t, &pieceIndex, gameWindow);
     } while(!boardFull(mat) && tetrominosStock(pieces) > 0 && !exit);
     clearWindow(gameWindow);
     clearWindow(pointsWindow);
-    gameOver();
+    gameOver(points);
 }
 
-void playerVsPlayer() {
+void multiPlayer(int cpu) {
+    int mat[MAT_H][MAT_W];
+    int mat2[MAT_H][MAT_W];
     WINDOW* gameWindow = newwin(MAT_H*2, MAT_W*2, 0, 0);
     WINDOW* pointsWindow = newwin(50, 45, 0, MAT_W*2);
     WINDOW* gameWindow2 = newwin(MAT_H*2, MAT_W*2, 0, MAT_W*2 + 48);
     int exit = 0;
     int i = 0, j = 0;
     int pieceIndex1 = 0, pieceIndex2 = 0;
+    int points = 0, points2 = 0;
     Tetromino t1, t2;
     int turn = 0;
 
     for (i = 0; i < 5; i++)
         pieces[i].stock = PIECES_STOCK*2;
-    points = 0;
-    points2 = 0;
-
+    
+    initMatrix(mat);
+    initMatrix(mat2);
     keypad(gameWindow, true);
     keypad(gameWindow2, true);
 
@@ -250,114 +266,31 @@ void playerVsPlayer() {
     printPointsMultiPlayer(pieces, pointsWindow, points, points2);
     do {
         if (!turn) {
-            exit = playTurn(mat, &t1, &pieceIndex1, gameWindow, pointsWindow);
+            exit = playTurn(mat, &t1, &pieceIndex1, gameWindow);
             printPointsMultiPlayer(pieces, pointsWindow, points, points2);
             points += checkRowsMultiplayer(mat, mat2);
             turn = 1;
         } else {
-            exit = playTurn(mat2, &t2, &pieceIndex2, gameWindow2, pointsWindow);
-            printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-            points2 += checkRowsMultiplayer(mat2, mat);
-            turn = 0;
+            if (cpu) {
+                playTurnCPU(mat2, &t2, gameWindow2);
+                printPointsMultiPlayer(pieces, pointsWindow, points, points2);
+                points2 += checkRowsMultiplayer(mat2, mat);
+                turn = 0;
+            } else {
+                exit = playTurn(mat2, &t2, &pieceIndex2, gameWindow2);
+                printPointsMultiPlayer(pieces, pointsWindow, points, points2);
+                points2 += checkRowsMultiplayer(mat2, mat);
+                turn = 0;
+            }
         }
     } while(!boardFull(mat) && !boardFull(mat2) && tetrominosStock(pieces) > 0 && !exit);
     clearWindow(gameWindow);
     clearWindow(gameWindow2);
     clearWindow(pointsWindow);
-    gameOverMultiplayer();
+    gameOverMultiplayer(points, points2);
 }
 
-void playerVsCpu() {
-    WINDOW* gameWindow = newwin(MAT_H*2, MAT_W*2, 0, 0);
-    WINDOW* pointsWindow = newwin(50, 45, 0, MAT_W*2);
-    WINDOW* gameWindow2 = newwin(MAT_H*2, MAT_W*2, 0, MAT_W*2 + 48);
-    int key;
-    int i = 0, j = 0;
-    int pieceIndex1 = 0, pieceIndex2 = 0;
-    Tetromino t1, t2;
-    int turn = 0;
-
-    for (i = 0; i < 5; i++)
-        pieces[i].stock = PIECES_STOCK*2;
-    points = 0;
-    points2 = 0;
-
-    keypad(gameWindow, true);
-    keypad(gameWindow2, true);
-
-    refreshWindow(gameWindow, t1, mat);
-    refreshWindow(gameWindow2, t2, mat2);
-    do {
-        if (!turn) {
-            t1 = pieces[pieceIndex1];
-            wtimeout(gameWindow, -1);
-
-            do {
-                while (t1.stock == 0) {
-                    pieceIndex1++;
-                    if (pieceIndex1 > 4)
-                        pieceIndex1 = 0;
-                    t1 = pieces[pieceIndex1];
-                }
-                refreshWindow(gameWindow, t1, mat);
-                printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-                key = wgetch(gameWindow);
-
-                if (key == KEY_TAB) {
-                    do {
-                        pieceIndex1++;
-                        if (pieceIndex1 > 4)
-                            pieceIndex1 = 0;
-                        t1 = pieces[pieceIndex1];
-                    } while(t1.stock == 0);
-                }
-            } while(key == KEY_TAB);
-            pieces[pieceIndex1].stock--;
-
-            do {
-                moveDown(&t1);
-                wtimeout(gameWindow, 100);
-                key = wgetch(gameWindow);
-                if (!checkCollision(&t1, key, mat))
-                    moveT(key, &t1);
-                refreshWindow(gameWindow, t1, mat);
-            } while(!checkCollision(&t1, KEY_DOWN, mat) && key != 'q');
-            saveTetromino(&t1, mat);
-            points += checkRowsMultiplayer(mat, mat2);
-            printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-
-            turn = 1;
-        } else {
-            do {
-                pieceIndex2 = rand() % 4;
-            } while (pieces[pieceIndex2].stock == 0);
-            t2 = pieces[pieceIndex2];
-            pieces[pieceIndex2].stock--;            
-            refreshWindow(gameWindow2, t2, mat2);
-            printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-            int dirs[3] = {KEY_LEFT, KEY_RIGHT, KEY_UP};
-
-            do {
-                moveDown(&t2);
-                key = dirs[rand() % 3];
-                if (!checkCollision(&t2, key, mat2))
-                    moveT(key, &t2);
-                refreshWindow(gameWindow2, t2, mat2);
-            } while(!checkCollision(&t2, KEY_DOWN, mat2) && key != 'q');
-            saveTetromino(&t2, mat2);
-            points2 += checkRowsMultiplayer(mat2, mat);
-            printPointsMultiPlayer(pieces, pointsWindow, points, points2);
-            
-            turn = 0;
-        }
-    } while(!boardFull(mat) && !boardFull(mat2) && tetrominosStock(pieces) > 0 && key != 'q');
-    clearWindow(gameWindow);
-    clearWindow(gameWindow2);
-    clearWindow(pointsWindow);
-    gameOverMultiplayer();
-}
-
-void gameOver() {
+void gameOver(int points) {
     WINDOW* win = newwin(1, 1, 20, 20);
     int key = 0;
     printGameOver(points);
@@ -368,7 +301,7 @@ void gameOver() {
     clearScreen();
 }
 
-void gameOverMultiplayer() {
+void gameOverMultiplayer(int points, int points2) {
     WINDOW* win = newwin(1, 1, 20, 20);
     int key = 0;
     
