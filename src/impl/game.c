@@ -144,7 +144,7 @@ int menu() {
         }
 
     } while(key != ENTER);
-
+    delwin(menu);
     return highlight;
 }
 
@@ -259,6 +259,7 @@ void multiPlayer(int cpu) {
     
     initMatrix(mat);
     initMatrix(mat2);
+    
     keypad(gameWindow, true);
     keypad(gameWindow2, true);
 

@@ -164,6 +164,7 @@ void clearScreen() {
 void clearWindow(WINDOW* w) {
     wclear(w);
     wrefresh(w);
+    delwin(w);
 }
 
 void refreshWindow(WINDOW* window, Tetromino t, int mat[MAT_H][MAT_W]) {
